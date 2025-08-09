@@ -6,7 +6,7 @@ import queue
 import uuid
 import time
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='.') 
 
 # Store active execution sessions
 active_sessions = {}

@@ -67,11 +67,13 @@
             flex: 1;
         }
 
-        .left-panel, .right-panel {
+        .left-panel,
+        .right-panel {
             background: #111111;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            /* Changed overflow from hidden to visible to avoid clipping the button */
+            overflow: visible;
         }
 
         .left-panel {
@@ -189,6 +191,9 @@
             font-weight: 500;
             font-family: 'Geist', sans-serif;
             transition: all 0.2s;
+            /* Added z-index to make sure button is above other content */
+            position: relative;
+            z-index: 10;
         }
 
         button:hover {
@@ -312,26 +317,26 @@
                 flex-direction: column;
                 height: auto;
             }
-            
+
             .left-panel {
                 width: 100%;
                 min-width: auto;
                 max-width: none;
                 height: 50vh;
             }
-            
+
             .right-panel {
                 height: 50vh;
             }
-            
+
             textarea {
                 height: 200px;
             }
-            
+
             .collapsible-content pre {
                 height: 150px;
             }
-            
+
             #terminal {
                 height: 300px;
             }
@@ -342,52 +347,52 @@
                 padding: 0 16px;
                 height: 50px;
             }
-            
+
             .container {
                 margin-top: 50px;
                 height: calc(100vh - 50px);
             }
-            
+
             .header h1 {
                 font-size: 18px;
             }
-            
+
             .header-buttons {
                 gap: 8px;
             }
-            
+
             button {
                 padding: 6px 12px;
                 font-size: 12px;
             }
-            
+
             .panel-header {
                 padding: 12px 16px;
             }
-            
+
             .panel-header h3 {
                 font-size: 13px;
             }
-            
+
             textarea {
                 padding: 16px;
                 font-size: 13px;
             }
-            
+
             #terminal {
                 padding: 16px;
                 font-size: 13px;
             }
-            
+
             .collapsible-header {
                 padding: 10px 16px;
             }
-            
+
             .collapsible-content pre {
                 padding: 16px;
                 font-size: 12px;
             }
-            
+
             #inputContainer {
                 padding: 12px 16px;
             }
