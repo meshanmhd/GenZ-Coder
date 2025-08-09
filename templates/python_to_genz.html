@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Python to Gen Z Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>Python to Gen Z Converter</h1>
+            <div class="header-buttons">
+                <button class="secondary-btn" onclick="goToGenzToPython()">COde in GenZ</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="split-container">
+            <!-- Left Panel - Python Code Editor -->
+            <div class="left-panel">
+                <div class="panel-header">
+                    <h3>Python Code Editor</h3>
+                    <button id="convertBtn" onclick="convertCode()">Convert to Gen Z</button>
+                </div>
+                <textarea id="pythonCode" placeholder="Paste your Python code here...
+
+Examples:
+print('Hello World!')
+name = input('What is your name? ')
+print('Hi ' + name)
+
+if name == 'John':
+    print('Wassup John!')
+else:
+    print('Nice to meet you!')"></textarea>
+            </div>
+
+            <!-- Right Panel - Gen Z Output -->
+            <div class="right-panel">
+                <div class="panel-header">
+                    <h3>Gen Z Code Output</h3>
+                    <button class="secondary-btn" id="copyBtn" onclick="copyToClipboard()">Copy Code</button>
+                </div>
+                <div id="genzOutput">
+                    <div class="output-content">
+                        <div class="placeholder-text">Your converted Gen Z code will appear here...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goToGenzToPython() {
+            window.location.href = '/';
+        }
+
+        function pythonToGenz(code) {
+            const pythonToSlangMap = {
+                "if": "sus", "else": "nope", "elif": "sus_else", "while": "loop", "for": "vibe",
+                "in": "snacc", "break": "stop_it", "continue": "skip_it", "pass": "pass_it",
+                "def": "make", "class": "gang", "return": "return_it", "import": "bring",
+                "as": "bring_as", "from": "from_place", "print": "say", "input": "spill",
+                "True": "fr", "False": "cap", "None": "null", "and": "andalso", "or": "orelse",
+                "not": "nah", "\\+": "maths", "-": "minus", "\\*": "times", "/": "div", "%": "modu",
+                "\\*\\*": "powah", "==": "is_same", "!=": "not_same", ">": "big", "<": "small",
+                ">=": "big_o_equal", "<=": "small_o_equal", "range": "nums", "len": "length",
+                "append": "add_it", "pop": "pop_it", "list": "listy", "dict": "dicty",
+                "set": "setty", "tuple": "tupley", "with": "wit", "try": "try_it",
+                "except": "catch_it", "finally": "finally_it", "raise": "raise_it",
+                "lambda": "lambda_it", "global": "global_it", "nonlocal": "nonlocal_it",
+                "assert": "assert_it", "del": "del_it", "yield": "yield_it"
+            };
+            
+            let result = code;
+            
+            // Handle word boundaries for keywords to avoid partial replacements
+            for (const [python, slang] of Object.entries(pythonToSlangMap)) {
+                if (python.includes('\\')) {
+                    // Handle operators with escaped characters
+                    result = result.replace(new RegExp(python, 'g'), slang);
+                } else {
+                    // Handle keywords with word boundaries
+                    result = result.replace(new RegExp(`\\b${python}\\b`, 'g'), slang);
+                }
+            }
+            
+            return result;
+        }
+
+        function convertCode() {
+            const pythonCode = document.getElementById("pythonCode").value;
+            if (!pythonCode.trim()) {
+                showOutput("No Python code to convert!", 'error');
+                return;
+            }
+
+            const genzCode = pythonToGenz(pythonCode);
+            showOutput(genzCode, 'success');
+        }
+
+        function showOutput(text, type = 'success') {
+            const outputDiv = document.getElementById("genzOutput");
+            
+            if (type === 'error') {
+                outputDiv.innerHTML = `<div class="output-content error">${text}</div>`;
+            } else {
+                outputDiv.innerHTML = `<div class="output-content"><pre>${text}</pre></div>`;
+            }
+        }
+
+        function copyToClipboard() {
+            const outputContent = document.querySelector("#genzOutput pre");
+            if (!outputContent) {
+                alert("No code to copy!");
+                return;
+            }
+
+            navigator.clipboard.writeText(outputContent.textContent).then(() => {
+                const copyBtn = document.getElementById("copyBtn");
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = "Copied!";
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            }).catch(() => {
+                alert("Failed to copy to clipboard");
+            });
+        }
+
+        // Auto-convert as user types (with debounce)
+        let convertTimeout;
+        document.getElementById("pythonCode").addEventListener('input', function() {
+            clearTimeout(convertTimeout);
+            convertTimeout = setTimeout(() => {
+                const code = this.value;
+                if (code.trim()) {
+                    const genzCode = pythonToGenz(code);
+                    showOutput(genzCode, 'success');
+                } else {
+                    showOutput("Your converted Gen Z code will appear here...", 'placeholder');
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,32 +1,230 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Gen Z Coder</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
+    <header class="header">
+        <div class="header-content">
+            <h1>Gen Z Coder</h1>
+            <div class="header-buttons">
+                <button class="secondary-btn" onclick="goToPythonToGenz()">Convert to Gen Z</button>
+            </div>
+        </div>
+    </header>
+
     <div class="container">
-        <h1>⚡ Gen Z Coder ⚡</h1>
-        <textarea id="genzCode" placeholder="Type your Gen Z code here..."></textarea>
-        <button onclick="runCode()">Run</button>
-        <h2>📝 Translated Python:</h2>
-        <pre id="pythonCode"></pre>
-        <h2>📜 Output:</h2>
-        <pre id="output"></pre>
+        <div class="split-container">
+            <!-- Left Panel - Code Editor -->
+            <div class="left-panel">
+                <div class="panel-header">
+                    <h3>Code Editor</h3>
+                    <button id="runBtn" onclick="runCode()">Run it up</button>
+                </div>
+                <textarea id="code" placeholder="Code here Nigga...
+
+Examples:
+say('Hello World!')
+name = spill('What is your name? ')
+say('Hi ' + name)
+
+sus name == 'John':
+    say('Wassup John!')
+nope:
+    say('Nice to meet you!')"></textarea>
+
+                <div class="translated-code">
+                    <div class="collapsible-header" onclick="toggleTranslatedCode()">
+                        <span class="arrow" id="translatedArrow">▶</span>
+                        <h4>Actual Code</h4>
+                    </div>
+                    <div class="collapsible-content" id="translatedContent">
+                        <pre id="translatedCode"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Interactive Terminal -->
+            <div class="right-panel">
+                <div class="panel-header">
+                    <h3>Terminal</h3>
+                    <button class="secondary-btn" id="clearBtn" onclick="clearTerminal()">Scrub it</button>
+                </div>
+                <div id="terminal">
+                    <div class="terminal-line">Yooo welcome to Gen Z Python Runner.</div>
+                    <div class="terminal-line">— Slap in ur code, press run, skibidy = instant vibes!!</div>
+                </div>
+                <div id="inputContainer" style="display: none;">
+                    <input type="text" id="userInput" placeholder="Yo fam, drop ur input here man.." />
+                    <button onclick="sendInput()">Shoot</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        async function runCode() {
-            const code = document.getElementById('genzCode').value;
-            const res = await fetch('/run', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({code})
-            });
-            const data = await res.json();
-            document.getElementById('pythonCode').textContent = data.python_code;
-            document.getElementById('output').textContent = data.output;
+        let currentExecution = null;
+        let waitingForInput = false;
+
+        function toggleTranslatedCode() {
+            const content = document.getElementById("translatedContent");
+            const arrow = document.getElementById("translatedArrow");
+
+            if (content.classList.contains("expanded")) {
+                content.classList.remove("expanded");
+                arrow.classList.remove("expanded");
+            } else {
+                content.classList.add("expanded");
+                arrow.classList.add("expanded");
+            }
         }
+
+        function goToPythonToGenz() {
+            window.location.href = '/python-to-genz';
+        }
+
+        function updateTranslatedCode() {
+            const genzCode = document.getElementById("code").value;
+            const translatedCode = translateGenzToPython(genzCode);
+            document.getElementById("translatedCode").textContent = translatedCode;
+        }
+
+        function translateGenzToPython(code) {
+            const slangMap = {
+                "sus": "if", "nope": "else", "sus_else": "elif", "loop": "while", "vibe": "for",
+                "snacc": "in", "stop_it": "break", "skip_it": "continue", "pass_it": "pass",
+                "make": "def", "gang": "class", "return_it": "return", "bring": "import",
+                "bring_as": "as", "from_place": "from", "say": "print", "spill": "input",
+                "fr": "True", "cap": "False", "null": "None", "andalso": "and", "orelse": "or",
+                "nah": "not", "maths": "+", "minus": "-", "times": "*", "div": "/", "modu": "%",
+                "powah": "**", "is_same": "==", "not_same": "!=", "big": ">", "small": "<",
+                "big_o_equal": ">=", "small_o_equal": "<=", "nums": "range", "length": "len",
+                "add_it": "append", "pop_it": "pop", "listy": "list", "dicty": "dict",
+                "setty": "set", "tupley": "tuple", "wit": "with", "as_it": "as",
+                "try_it": "try", "catch_it": "except", "finally_it": "finally", "raise_it": "raise"
+            };
+
+            let result = code;
+            for (const [slang, python] of Object.entries(slangMap)) {
+                result = result.replace(new RegExp(slang, 'g'), python);
+            }
+            return result;
+        }
+
+        function addToTerminal(text, className = '') {
+            const terminal = document.getElementById("terminal");
+            const line = document.createElement("div");
+            line.className = `terminal-line ${className}`;
+            line.textContent = text;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function clearTerminal() {
+            document.getElementById("terminal").innerHTML =
+                '<div class="terminal-line system">Terminal got yeeted fr</div>';
+        }
+
+        function showInputPrompt() {
+            document.getElementById("inputContainer").style.display = "flex";
+            document.getElementById("userInput").focus();
+            waitingForInput = true;
+        }
+
+        function hideInputPrompt() {
+            document.getElementById("inputContainer").style.display = "none";
+            waitingForInput = false;
+        }
+
+        function sendInput() {
+            const input = document.getElementById("userInput").value;
+            addToTerminal(`> ${input}`, 'user-input');
+            document.getElementById("userInput").value = '';
+            hideInputPrompt();
+
+            if (currentExecution) {
+                fetch("/input", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        executionId: currentExecution,
+                        input: input
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.output) {
+                            addToTerminal(data.output, 'output');
+                        }
+                        if (data.needsInput) {
+                            showInputPrompt();
+                        } else {
+                            currentExecution = null;
+                        }
+                    })
+                    .catch(err => {
+                        addToTerminal(`Error: ${err.message}`, 'error');
+                        currentExecution = null;
+                    });
+            }
+        }
+
+        function runCode() {
+            const code = document.getElementById("code").value;
+            if (!code.trim()) {
+                // Clear terminal first
+                document.getElementById("terminal").innerHTML = '';
+                addToTerminal("Bruh, no code to vibe with", 'error');
+                return;
+            }
+
+            // Clear terminal and show only running message
+            document.getElementById("terminal").innerHTML = '';
+            addToTerminal("Code is about to hit different...", 'system');
+
+            fetch("/run", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: code })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    // Clear the "running" message and show only output
+                    document.getElementById("terminal").innerHTML = '';
+
+                    if (data.output) {
+                        addToTerminal(data.output, 'output');
+                    }
+                    if (data.needsInput) {
+                        currentExecution = data.executionId;
+                        showInputPrompt();
+                    } else if (data.error) {
+                        addToTerminal(data.error, 'error');
+                    }
+                })
+                .catch(err => {
+                    document.getElementById("terminal").innerHTML = '';
+                    addToTerminal(`Yo, connection is not it rn: ${err.message}`, 'error');
+                });
+        }
+
+        // Update translated code as user types
+        document.getElementById("code").addEventListener('input', updateTranslatedCode);
+
+        // Handle Enter key in input field
+        document.getElementById("userInput").addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendInput();
+            }
+        });
+
+        // Initial translation
+        updateTranslatedCode();
     </script>
 </body>
+
 </html>
