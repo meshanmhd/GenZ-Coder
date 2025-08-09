@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gen Z Coder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ Gen Z Coder ⚡</h1>
+        <textarea id="genzCode" placeholder="Type your Gen Z code here..."></textarea>
+        <button onclick="runCode()">Run</button>
+        <h2>📝 Translated Python:</h2>
+        <pre id="pythonCode"></pre>
+        <h2>📜 Output:</h2>
+        <pre id="output"></pre>
+    </div>
+
+    <script>
+        async function runCode() {
+            const code = document.getElementById('genzCode').value;
+            const res = await fetch('/run', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({code})
+            });
+            const data = await res.json();
+            document.getElementById('pythonCode').textContent = data.python_code;
+            document.getElementById('output').textContent = data.output;
+        }
+    </script>
+</body>
+</html>
